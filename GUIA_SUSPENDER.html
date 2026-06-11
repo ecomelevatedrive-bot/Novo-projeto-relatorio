@@ -1,0 +1,843 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Guia — Automação com Modo Suspender</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    :root {
+      --primary: #6c47ff;
+      --primary-light: #8b6bff;
+      --primary-dark: #4f2fe0;
+      --accent: #00d4aa;
+      --accent2: #ff6b6b;
+      --bg: #0d0d1a;
+      --bg2: #12122a;
+      --card: #1a1a35;
+      --card2: #22224a;
+      --text: #e8e8f8;
+      --text-muted: #8888aa;
+      --border: rgba(108,71,255,0.2);
+      --success: #00d4aa;
+      --warning: #ffa94d;
+    }
+
+    body {
+      font-family: 'Segoe UI', system-ui, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    /* ── HERO ── */
+    .hero {
+      background: linear-gradient(135deg, #0d0d1a 0%, #1a0a3a 50%, #0a1a2a 100%);
+      padding: 80px 40px 60px;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .hero::before {
+      content: '';
+      position: absolute;
+      top: -50%;
+      left: -20%;
+      width: 60%;
+      height: 200%;
+      background: radial-gradient(ellipse, rgba(108,71,255,0.12) 0%, transparent 70%);
+      pointer-events: none;
+    }
+
+    .hero::after {
+      content: '';
+      position: absolute;
+      top: -30%;
+      right: -10%;
+      width: 50%;
+      height: 150%;
+      background: radial-gradient(ellipse, rgba(0,212,170,0.08) 0%, transparent 70%);
+      pointer-events: none;
+    }
+
+    .badge {
+      display: inline-block;
+      background: rgba(108,71,255,0.15);
+      border: 1px solid rgba(108,71,255,0.4);
+      color: var(--primary-light);
+      font-size: 12px;
+      font-weight: 600;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      padding: 6px 16px;
+      border-radius: 20px;
+      margin-bottom: 24px;
+    }
+
+    .hero h1 {
+      font-size: clamp(28px, 5vw, 52px);
+      font-weight: 800;
+      line-height: 1.15;
+      margin-bottom: 16px;
+      background: linear-gradient(135deg, #fff 0%, var(--primary-light) 60%, var(--accent) 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      position: relative;
+      z-index: 1;
+    }
+
+    .hero p {
+      font-size: 17px;
+      color: var(--text-muted);
+      max-width: 620px;
+      margin: 0 auto 40px;
+      line-height: 1.7;
+      position: relative;
+      z-index: 1;
+    }
+
+    .hero-meta {
+      display: flex;
+      justify-content: center;
+      gap: 32px;
+      flex-wrap: wrap;
+      position: relative;
+      z-index: 1;
+    }
+
+    .meta-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 14px;
+      color: var(--text-muted);
+    }
+
+    .meta-icon {
+      width: 32px;
+      height: 32px;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 16px;
+    }
+
+    .meta-icon.green { background: rgba(0,212,170,0.15); }
+    .meta-icon.purple { background: rgba(108,71,255,0.15); }
+    .meta-icon.orange { background: rgba(255,169,77,0.15); }
+
+    /* ── DIAGNÓSTICO ── */
+    .section {
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 60px 24px;
+    }
+
+    .section-label {
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      color: var(--primary-light);
+      margin-bottom: 8px;
+    }
+
+    .section-title {
+      font-size: 26px;
+      font-weight: 700;
+      margin-bottom: 32px;
+      color: var(--text);
+    }
+
+    .diag-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 16px;
+      margin-bottom: 40px;
+    }
+
+    .diag-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .diag-card .label {
+      font-size: 12px;
+      color: var(--text-muted);
+      font-weight: 500;
+    }
+
+    .diag-card .value {
+      font-size: 18px;
+      font-weight: 700;
+      color: var(--text);
+    }
+
+    .diag-card .status {
+      font-size: 12px;
+      font-weight: 600;
+      padding: 3px 10px;
+      border-radius: 20px;
+      display: inline-block;
+      width: fit-content;
+    }
+
+    .status.ok { background: rgba(0,212,170,0.15); color: var(--accent); border: 1px solid rgba(0,212,170,0.3); }
+    .status.warn { background: rgba(255,169,77,0.15); color: var(--warning); border: 1px solid rgba(255,169,77,0.3); }
+    .status.critical { background: rgba(255,107,107,0.15); color: var(--accent2); border: 1px solid rgba(255,107,107,0.3); }
+
+    /* ── TIMELINE DE PASSOS ── */
+    .steps-container {
+      position: relative;
+      padding-left: 0;
+    }
+
+    .step {
+      display: grid;
+      grid-template-columns: 72px 1fr;
+      gap: 24px;
+      margin-bottom: 32px;
+      position: relative;
+    }
+
+    .step-left {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0;
+    }
+
+    .step-num {
+      width: 52px;
+      height: 52px;
+      border-radius: 14px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 20px;
+      font-weight: 800;
+      flex-shrink: 0;
+      position: relative;
+      z-index: 1;
+    }
+
+    .step-num.purple { background: linear-gradient(135deg, var(--primary), var(--primary-dark)); box-shadow: 0 4px 20px rgba(108,71,255,0.4); }
+    .step-num.teal   { background: linear-gradient(135deg, #00c9a7, #00d4aa); box-shadow: 0 4px 20px rgba(0,212,170,0.4); }
+    .step-num.orange { background: linear-gradient(135deg, #ff8c42, #ffa94d); box-shadow: 0 4px 20px rgba(255,169,77,0.4); }
+    .step-num.red    { background: linear-gradient(135deg, #ff6b6b, #ee5a24); box-shadow: 0 4px 20px rgba(255,107,107,0.4); }
+    .step-num.blue   { background: linear-gradient(135deg, #4dabf7, #339af0); box-shadow: 0 4px 20px rgba(77,171,247,0.4); }
+
+    .step-line {
+      width: 2px;
+      flex: 1;
+      min-height: 24px;
+      background: linear-gradient(to bottom, rgba(108,71,255,0.4), transparent);
+      margin-top: 4px;
+    }
+
+    .step-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 28px;
+      transition: border-color 0.2s, transform 0.2s;
+    }
+
+    .step-card:hover {
+      border-color: rgba(108,71,255,0.5);
+      transform: translateY(-2px);
+    }
+
+    .step-header {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 16px;
+      flex-wrap: wrap;
+    }
+
+    .step-title {
+      font-size: 18px;
+      font-weight: 700;
+      color: var(--text);
+      flex: 1;
+    }
+
+    .step-tag {
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 1px;
+      padding: 4px 12px;
+      border-radius: 20px;
+      white-space: nowrap;
+    }
+
+    .tag-ok      { background: rgba(0,212,170,0.12); color: var(--accent); border: 1px solid rgba(0,212,170,0.3); }
+    .tag-action  { background: rgba(108,71,255,0.12); color: var(--primary-light); border: 1px solid rgba(108,71,255,0.3); }
+    .tag-critical{ background: rgba(255,107,107,0.12); color: var(--accent2); border: 1px solid rgba(255,107,107,0.3); }
+    .tag-test    { background: rgba(77,171,247,0.12); color: #74c0fc; border: 1px solid rgba(77,171,247,0.3); }
+
+    .step-desc {
+      color: var(--text-muted);
+      font-size: 14px;
+      line-height: 1.7;
+      margin-bottom: 20px;
+    }
+
+    /* ── INSTRUÇÃO NUMERADA ── */
+    .instructions {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .inst {
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      background: var(--bg2);
+      border: 1px solid rgba(255,255,255,0.05);
+      border-radius: 10px;
+      padding: 12px 16px;
+    }
+
+    .inst-num {
+      min-width: 24px;
+      height: 24px;
+      border-radius: 6px;
+      background: rgba(108,71,255,0.2);
+      color: var(--primary-light);
+      font-size: 12px;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .inst-text {
+      font-size: 14px;
+      color: var(--text);
+      line-height: 1.6;
+    }
+
+    .inst-text code {
+      background: rgba(108,71,255,0.15);
+      color: var(--primary-light);
+      border: 1px solid rgba(108,71,255,0.25);
+      border-radius: 4px;
+      padding: 1px 6px;
+      font-family: 'Consolas', monospace;
+      font-size: 13px;
+    }
+
+    /* ── CODE BLOCK ── */
+    .code-block {
+      background: #0a0a1a;
+      border: 1px solid rgba(108,71,255,0.25);
+      border-radius: 12px;
+      overflow: hidden;
+      margin-top: 16px;
+    }
+
+    .code-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 10px 16px;
+      background: rgba(108,71,255,0.08);
+      border-bottom: 1px solid rgba(108,71,255,0.15);
+    }
+
+    .code-header span {
+      font-size: 12px;
+      color: var(--text-muted);
+      font-weight: 600;
+      letter-spacing: 1px;
+    }
+
+    .copy-btn {
+      background: rgba(108,71,255,0.2);
+      border: 1px solid rgba(108,71,255,0.3);
+      color: var(--primary-light);
+      border-radius: 6px;
+      padding: 4px 12px;
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .copy-btn:hover { background: rgba(108,71,255,0.35); }
+    .copy-btn.copied { background: rgba(0,212,170,0.2); border-color: rgba(0,212,170,0.4); color: var(--accent); }
+
+    .code-block pre {
+      padding: 18px 20px;
+      font-family: 'Consolas', 'Courier New', monospace;
+      font-size: 13px;
+      line-height: 1.8;
+      color: #c8d3f5;
+      overflow-x: auto;
+      white-space: pre;
+    }
+
+    .code-block pre .comment { color: #565f89; }
+    .code-block pre .cmd { color: #7dcfff; }
+    .code-block pre .flag { color: #bb9af7; }
+    .code-block pre .string { color: #9ece6a; }
+
+    /* ── ALERT ── */
+    .alert {
+      display: flex;
+      gap: 12px;
+      padding: 14px 16px;
+      border-radius: 10px;
+      margin-top: 16px;
+      font-size: 14px;
+      line-height: 1.6;
+    }
+
+    .alert.info   { background: rgba(108,71,255,0.08); border: 1px solid rgba(108,71,255,0.2); color: #a9b8ff; }
+    .alert.ok     { background: rgba(0,212,170,0.08); border: 1px solid rgba(0,212,170,0.2); color: #7de8d3; }
+    .alert.warn   { background: rgba(255,169,77,0.08); border: 1px solid rgba(255,169,77,0.2); color: #ffc47a; }
+    .alert.danger { background: rgba(255,107,107,0.08); border: 1px solid rgba(255,107,107,0.2); color: #ff9f9f; }
+
+    .alert-icon { font-size: 18px; flex-shrink: 0; }
+
+    /* ── FLUXO FINAL ── */
+    .flow-section {
+      background: linear-gradient(135deg, var(--card) 0%, var(--card2) 100%);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 40px;
+      margin-top: 20px;
+      text-align: center;
+    }
+
+    .flow-title {
+      font-size: 20px;
+      font-weight: 700;
+      margin-bottom: 32px;
+      color: var(--text);
+    }
+
+    .flow-steps {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0;
+      flex-wrap: wrap;
+    }
+
+    .flow-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 10px;
+      max-width: 120px;
+    }
+
+    .flow-icon {
+      width: 56px;
+      height: 56px;
+      border-radius: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 24px;
+    }
+
+    .flow-icon.p { background: rgba(108,71,255,0.2); border: 1px solid rgba(108,71,255,0.3); }
+    .flow-icon.t { background: rgba(0,212,170,0.2); border: 1px solid rgba(0,212,170,0.3); }
+    .flow-icon.o { background: rgba(255,169,77,0.2); border: 1px solid rgba(255,169,77,0.3); }
+    .flow-icon.b { background: rgba(77,171,247,0.2); border: 1px solid rgba(77,171,247,0.3); }
+
+    .flow-label {
+      font-size: 12px;
+      color: var(--text-muted);
+      text-align: center;
+      line-height: 1.4;
+      font-weight: 500;
+    }
+
+    .flow-arrow {
+      font-size: 20px;
+      color: var(--primary-light);
+      padding: 0 8px;
+      flex-shrink: 0;
+    }
+
+    /* ── FOOTER ── */
+    footer {
+      text-align: center;
+      padding: 40px 24px;
+      border-top: 1px solid var(--border);
+      color: var(--text-muted);
+      font-size: 13px;
+    }
+
+    footer strong { color: var(--primary-light); }
+
+    @media (max-width: 600px) {
+      .step { grid-template-columns: 52px 1fr; gap: 14px; }
+      .flow-steps { gap: 8px; }
+      .flow-arrow { display: none; }
+      .hero { padding: 50px 20px 40px; }
+      .section { padding: 40px 16px; }
+      .flow-section { padding: 24px 16px; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- HERO -->
+<div class="hero">
+  <div class="badge">Elevate Ecom · Automação Shopee</div>
+  <h1>Configurar Modo Suspender<br>para a Automação</h1>
+  <p>Guia completo para garantir que o relatório Shopee seja gerado toda sexta-feira às 00:00, mesmo com o PC em modo suspender.</p>
+  <div class="hero-meta">
+    <div class="meta-item">
+      <div class="meta-icon green">✓</div>
+      <span>WakeToRun já ativo</span>
+    </div>
+    <div class="meta-item">
+      <div class="meta-icon purple">⏰</div>
+      <span>Toda sexta às 00:00</span>
+    </div>
+    <div class="meta-item">
+      <div class="meta-icon orange">⚡</div>
+      <span>5 passos para configurar</span>
+    </div>
+  </div>
+</div>
+
+<!-- DIAGNÓSTICO -->
+<div class="section">
+  <div class="section-label">Diagnóstico</div>
+  <div class="section-title">Status atual do sistema</div>
+  <div class="diag-grid">
+    <div class="diag-card">
+      <div class="label">WakeToRun (tarefa)</div>
+      <div class="value">Ativo</div>
+      <div class="status ok">Correto</div>
+    </div>
+    <div class="diag-card">
+      <div class="label">Despertadores (energia)</div>
+      <div class="value">Ativado</div>
+      <div class="status ok">Correto</div>
+    </div>
+    <div class="diag-card">
+      <div class="label">Suspensão na tomada</div>
+      <div class="value">60 min</div>
+      <div class="status ok">Normal</div>
+    </div>
+    <div class="diag-card">
+      <div class="label">Suspensão na bateria</div>
+      <div class="value">10 min</div>
+      <div class="status warn">Verificar</div>
+    </div>
+    <div class="diag-card">
+      <div class="label">BIOS Wake on RTC</div>
+      <div class="value">Desconhecido</div>
+      <div class="status critical">Verificar</div>
+    </div>
+    <div class="diag-card">
+      <div class="label">Próxima execução</div>
+      <div class="value">Sex 00:00</div>
+      <div class="status ok">Agendado</div>
+    </div>
+  </div>
+
+  <!-- PASSOS -->
+  <div class="section-label">Configuração</div>
+  <div class="section-title">Passo a passo</div>
+
+  <div class="steps-container">
+
+    <!-- PASSO 1 -->
+    <div class="step">
+      <div class="step-left">
+        <div class="step-num purple">1</div>
+        <div class="step-line"></div>
+      </div>
+      <div class="step-card">
+        <div class="step-header">
+          <div class="step-title">Permitir despertadores nas Opções de Energia</div>
+          <span class="step-tag tag-ok">Já ativo</span>
+        </div>
+        <div class="step-desc">
+          Confirme que o Windows está autorizado a acordar o PC a partir de um agendamento.
+        </div>
+        <div class="instructions">
+          <div class="inst">
+            <div class="inst-num">1</div>
+            <div class="inst-text">Abra <code>Painel de Controle</code> → <code>Opções de Energia</code></div>
+          </div>
+          <div class="inst">
+            <div class="inst-num">2</div>
+            <div class="inst-text">Clique em <code>Alterar configurações do esquema</code> no esquema ativo</div>
+          </div>
+          <div class="inst">
+            <div class="inst-num">3</div>
+            <div class="inst-text">Clique em <code>Alterar configurações de energia avançadas</code></div>
+          </div>
+          <div class="inst">
+            <div class="inst-num">4</div>
+            <div class="inst-text">Expanda <code>Suspender</code> → <code>Permitir despertadores</code></div>
+          </div>
+          <div class="inst">
+            <div class="inst-num">5</div>
+            <div class="inst-text">Defina como <code>Ativar</code> em <strong>Tomada</strong> e <strong>Bateria</strong> → clique <code>OK</code></div>
+          </div>
+        </div>
+        <div class="alert ok">
+          <span class="alert-icon">✓</span>
+          <span>Seu PC já está com esta opção ativa (índice 1 confirmado via PowerShell).</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- PASSO 2 -->
+    <div class="step">
+      <div class="step-left">
+        <div class="step-num teal">2</div>
+        <div class="step-line"></div>
+      </div>
+      <div class="step-card">
+        <div class="step-header">
+          <div class="step-title">Confirmar WakeToRun na tarefa agendada</div>
+          <span class="step-tag tag-ok">Já ativo</span>
+        </div>
+        <div class="step-desc">
+          A opção "Ativar o computador para executar esta tarefa" deve estar marcada na tarefa <strong>Elevate Ecom - Relatorio Shopee</strong>.
+        </div>
+        <div class="instructions">
+          <div class="inst">
+            <div class="inst-num">1</div>
+            <div class="inst-text">Pressione <code>Win + R</code> e digite <code>taskschd.msc</code> → Enter</div>
+          </div>
+          <div class="inst">
+            <div class="inst-num">2</div>
+            <div class="inst-text">Localize a tarefa <code>Elevate Ecom - Relatorio Shopee</code></div>
+          </div>
+          <div class="inst">
+            <div class="inst-num">3</div>
+            <div class="inst-text">Clique com botão direito → <code>Propriedades</code></div>
+          </div>
+          <div class="inst">
+            <div class="inst-num">4</div>
+            <div class="inst-text">Vá na aba <code>Condições</code></div>
+          </div>
+          <div class="inst">
+            <div class="inst-num">5</div>
+            <div class="inst-text">Marque: <code>Ativar o computador para executar esta tarefa</code> → <code>OK</code></div>
+          </div>
+        </div>
+        <div class="alert ok">
+          <span class="alert-icon">✓</span>
+          <span><code>WakeToRun = True</code> confirmado. Esta configuração já está correta.</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- PASSO 3 -->
+    <div class="step">
+      <div class="step-left">
+        <div class="step-num orange">3</div>
+        <div class="step-line"></div>
+      </div>
+      <div class="step-card">
+        <div class="step-header">
+          <div class="step-title">Aplicar via PowerShell (como Administrador)</div>
+          <span class="step-tag tag-action">Executar</span>
+        </div>
+        <div class="step-desc">
+          Garante que os despertadores estejam habilitados no esquema de energia ativo, tanto na tomada quanto na bateria.
+        </div>
+        <div class="instructions">
+          <div class="inst">
+            <div class="inst-num">1</div>
+            <div class="inst-text">Clique no menu Iniciar, procure por <code>PowerShell</code></div>
+          </div>
+          <div class="inst">
+            <div class="inst-num">2</div>
+            <div class="inst-text">Clique com botão direito → <code>Executar como Administrador</code></div>
+          </div>
+          <div class="inst">
+            <div class="inst-num">3</div>
+            <div class="inst-text">Cole e execute o comando abaixo:</div>
+          </div>
+        </div>
+        <div class="code-block">
+          <div class="code-header">
+            <span>POWERSHELL · Admin</span>
+            <button class="copy-btn" onclick="copyCode(this, 'code1')">Copiar</button>
+          </div>
+          <pre id="code1"><span class="comment"># Habilita despertadores no esquema de energia ativo</span>
+<span class="cmd">powercfg</span> <span class="flag">/setacvalueindex</span> SCHEME_CURRENT SUB_SLEEP RTCWAKE 1
+<span class="cmd">powercfg</span> <span class="flag">/setdcvalueindex</span> SCHEME_CURRENT SUB_SLEEP RTCWAKE 1
+<span class="cmd">powercfg</span> <span class="flag">/setactive</span> SCHEME_CURRENT
+<span class="comment"># Confirma que foi aplicado</span>
+<span class="cmd">powercfg</span> <span class="flag">/query</span> SCHEME_CURRENT SUB_SLEEP RTCWAKE</pre>
+        </div>
+        <div class="alert info">
+          <span class="alert-icon">ℹ</span>
+          <span>Após executar, o resultado deve mostrar <strong>Índice Atual: 0x00000001</strong> — isso confirma que os despertadores estão ativos.</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- PASSO 4 -->
+    <div class="step">
+      <div class="step-left">
+        <div class="step-num red">4</div>
+        <div class="step-line"></div>
+      </div>
+      <div class="step-card">
+        <div class="step-header">
+          <div class="step-title">Verificar Wake on RTC na BIOS/UEFI</div>
+          <span class="step-tag tag-critical">Crítico</span>
+        </div>
+        <div class="step-desc">
+          Este é o passo mais importante. Se o Wake on RTC estiver desabilitado na BIOS, o Windows não consegue acordar o PC, independente de qualquer outra configuração.
+        </div>
+        <div class="instructions">
+          <div class="inst">
+            <div class="inst-num">1</div>
+            <div class="inst-text">Reinicie o PC e pressione a tecla de acesso à BIOS durante o boot — geralmente <code>F2</code>, <code>Del</code>, <code>F10</code> ou <code>Esc</code></div>
+          </div>
+          <div class="inst">
+            <div class="inst-num">2</div>
+            <div class="inst-text">Procure pelo menu <code>Power Management</code>, <code>Advanced</code> ou <code>APM</code></div>
+          </div>
+          <div class="inst">
+            <div class="inst-num">3</div>
+            <div class="inst-text">Localize a opção <code>Wake on RTC</code>, <code>RTC Wake</code> ou <code>Resume by RTC Alarm</code></div>
+          </div>
+          <div class="inst">
+            <div class="inst-num">4</div>
+            <div class="inst-text">Defina como <code>Enabled</code> (Ativado)</div>
+          </div>
+          <div class="inst">
+            <div class="inst-num">5</div>
+            <div class="inst-text">Salve e reinicie — geralmente <code>F10</code> para salvar e sair</div>
+          </div>
+        </div>
+        <div class="alert danger">
+          <span class="alert-icon">⚠</span>
+          <span>Se esta opção não existir na BIOS, o PC <strong>não irá acordar</strong> do modo suspender. Neste caso, deixe o PC ligado (mas com monitor desligado) na noite de quinta para sexta.</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- PASSO 5 -->
+    <div class="step">
+      <div class="step-left">
+        <div class="step-num blue">5</div>
+      </div>
+      <div class="step-card">
+        <div class="step-header">
+          <div class="step-title">Testar o comportamento completo</div>
+          <span class="step-tag tag-test">Teste</span>
+        </div>
+        <div class="step-desc">
+          Valide que o PC acorda do suspender e executa o script corretamente antes da próxima sexta-feira.
+        </div>
+        <div class="instructions">
+          <div class="inst">
+            <div class="inst-num">A</div>
+            <div class="inst-text"><strong>Teste rápido do script:</strong> No Agendador de Tarefas, clique com botão direito na tarefa → <code>Executar</code> — verifique se o relatório é gerado</div>
+          </div>
+          <div class="inst">
+            <div class="inst-num">B</div>
+            <div class="inst-text"><strong>Teste do despertar:</strong> Execute o comando abaixo como Admin para suspender o PC e acordar em 2 minutos</div>
+          </div>
+        </div>
+        <div class="code-block">
+          <div class="code-header">
+            <span>POWERSHELL · Admin · Teste de despertar</span>
+            <button class="copy-btn" onclick="copyCode(this, 'code2')">Copiar</button>
+          </div>
+          <pre id="code2"><span class="comment"># Agenda um despertador para daqui 2 minutos e suspende o PC</span>
+<span class="cmd">$wakeTime</span> = (Get-Date).AddMinutes(2)
+<span class="cmd">schtasks</span> <span class="flag">/create</span> <span class="flag">/tn</span> <span class="string">"TesteAcordar"</span> <span class="flag">/tr</span> <span class="string">"cmd /c echo acordei"</span> <span class="flag">/sc</span> once <span class="flag">/st</span> <span class="string">$($wakeTime.ToString('HH:mm'))</span> <span class="flag">/f</span>
+<span class="cmd">shutdown</span> <span class="flag">/h</span>
+<span class="comment"># Se o PC acordar sozinho em ~2 min, a configuração está correta!</span></pre>
+        </div>
+        <div class="alert warn">
+          <span class="alert-icon">⚠</span>
+          <span>Use <code>shutdown /h</code> (hibernar) apenas se quiser testar. O modo suspender normal (<code>S3</code>) também é suportado pelo WakeToRun do Agendador de Tarefas.</span>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- FLUXO FINAL -->
+  <div class="flow-section">
+    <div class="flow-title">Como funciona na sexta-feira às 00:00</div>
+    <div class="flow-steps">
+      <div class="flow-item">
+        <div class="flow-icon p">💤</div>
+        <div class="flow-label">PC em modo<br>suspender</div>
+      </div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-item">
+        <div class="flow-icon t">⏰</div>
+        <div class="flow-label">Despertador<br>do Windows</div>
+      </div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-item">
+        <div class="flow-icon o">⚡</div>
+        <div class="flow-label">PC acorda<br>automaticamente</div>
+      </div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-item">
+        <div class="flow-icon b">📄</div>
+        <div class="flow-label">RODAR_RELATORIO<br>.bat executa</div>
+      </div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-item">
+        <div class="flow-icon t">✅</div>
+        <div class="flow-label">Relatório<br>Shopee gerado</div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<!-- FOOTER -->
+<footer>
+  Gerado por <strong>Claude Code</strong> · Elevate Ecom · Automação Shopee ·
+  Tarefa: <strong>Elevate Ecom - Relatorio Shopee</strong> · Toda sexta às 00:00
+</footer>
+
+<script>
+  function copyCode(btn, id) {
+    const pre = document.getElementById(id);
+    const text = pre.innerText;
+    navigator.clipboard.writeText(text).then(() => {
+      btn.textContent = 'Copiado!';
+      btn.classList.add('copied');
+      setTimeout(() => {
+        btn.textContent = 'Copiar';
+        btn.classList.remove('copied');
+      }, 2000);
+    });
+  }
+</script>
+
+</body>
+</html>

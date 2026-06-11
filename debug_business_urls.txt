@@ -1,0 +1,4 @@
+Total respostas JSON capturadas: 0
+  Via JS interceptor: 0
+  Via Playwright listener: 0
+

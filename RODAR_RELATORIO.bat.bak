@@ -1,0 +1,19 @@
+@echo off
+chcp 65001 >nul
+title Relatorio Semanal Shopee + Monday.com
+
+cd /d "%~dp0"
+
+echo.
+echo =====================================================
+echo   RELATORIO SEMANAL - SHOPEE + MONDAY.COM
+echo =====================================================
+echo.
+
+"C:\Users\User\AppData\Local\Python\bin\python.exe" main.py
+
+echo.
+echo =====================================================
+echo   Pressione qualquer tecla para fechar...
+echo =====================================================
+pause >nul

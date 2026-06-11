@@ -1,0 +1,4 @@
+{
+  "code": 10006,
+  "msg": "err:invalid param, detail:Key: 'DashBoardReq.Period' Error:Field validation for 'Period' failed on the 'required' tag"
+}

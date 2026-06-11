@@ -1,0 +1,556 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Changelog — Elevate Ecom | Automação Shopee</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Segoe UI', Arial, sans-serif;
+      background: #0f1117;
+      color: #e2e8f0;
+      padding: 40px 20px;
+    }
+
+    .container {
+      max-width: 900px;
+      margin: 0 auto;
+    }
+
+    /* HEADER */
+    .header {
+      text-align: center;
+      margin-bottom: 48px;
+    }
+    .header .badge {
+      display: inline-block;
+      background: linear-gradient(135deg, #f97316, #ea580c);
+      color: #fff;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      padding: 4px 14px;
+      border-radius: 20px;
+      margin-bottom: 14px;
+    }
+    .header h1 {
+      font-size: 32px;
+      font-weight: 800;
+      color: #f8fafc;
+      margin-bottom: 8px;
+    }
+    .header p {
+      color: #94a3b8;
+      font-size: 14px;
+    }
+
+    /* STATS */
+    .stats {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 16px;
+      margin-bottom: 48px;
+    }
+    .stat-card {
+      background: #1e2433;
+      border: 1px solid #2d3748;
+      border-radius: 12px;
+      padding: 20px;
+      text-align: center;
+    }
+    .stat-card .num {
+      font-size: 36px;
+      font-weight: 800;
+      line-height: 1;
+      margin-bottom: 6px;
+    }
+    .stat-card .label {
+      font-size: 12px;
+      color: #64748b;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+    .stat-card.green .num  { color: #22c55e; }
+    .stat-card.blue .num   { color: #38bdf8; }
+    .stat-card.orange .num { color: #f97316; }
+    .stat-card.purple .num { color: #a78bfa; }
+
+    /* SECTION */
+    .section { margin-bottom: 40px; }
+    .section-title {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 13px;
+      font-weight: 700;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      color: #64748b;
+      margin-bottom: 16px;
+      padding-bottom: 10px;
+      border-bottom: 1px solid #1e2433;
+    }
+    .section-title .dot {
+      width: 8px; height: 8px;
+      border-radius: 50%;
+      flex-shrink: 0;
+    }
+    .dot.green  { background: #22c55e; }
+    .dot.red    { background: #ef4444; }
+    .dot.blue   { background: #38bdf8; }
+    .dot.orange { background: #f97316; }
+
+    /* CARDS */
+    .card {
+      background: #1e2433;
+      border: 1px solid #2d3748;
+      border-radius: 12px;
+      padding: 20px 24px;
+      margin-bottom: 12px;
+      position: relative;
+      overflow: hidden;
+    }
+    .card::before {
+      content: '';
+      position: absolute;
+      left: 0; top: 0; bottom: 0;
+      width: 3px;
+    }
+    .card.fix::before    { background: #22c55e; }
+    .card.bug::before    { background: #ef4444; }
+    .card.new::before    { background: #38bdf8; }
+    .card.improve::before { background: #f97316; }
+
+    .card-header {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 8px;
+    }
+    .tag {
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      padding: 2px 8px;
+      border-radius: 4px;
+    }
+    .tag.fix     { background: #14532d; color: #22c55e; }
+    .tag.bug     { background: #450a0a; color: #f87171; }
+    .tag.new     { background: #0c1a2e; color: #38bdf8; }
+    .tag.improve { background: #431407; color: #fb923c; }
+
+    .card-title {
+      font-size: 15px;
+      font-weight: 700;
+      color: #f1f5f9;
+    }
+    .card-file {
+      font-size: 11px;
+      color: #475569;
+      font-family: 'Consolas', monospace;
+      margin-left: auto;
+    }
+    .card-desc {
+      font-size: 13px;
+      color: #94a3b8;
+      line-height: 1.6;
+    }
+    .card-desc ul {
+      margin-top: 6px;
+      padding-left: 18px;
+    }
+    .card-desc li { margin-bottom: 3px; }
+
+    code {
+      background: #0f1117;
+      color: #f97316;
+      padding: 1px 6px;
+      border-radius: 4px;
+      font-family: 'Consolas', monospace;
+      font-size: 12px;
+    }
+
+    /* TIMELINE */
+    .timeline { position: relative; padding-left: 28px; }
+    .timeline::before {
+      content: '';
+      position: absolute;
+      left: 7px; top: 0; bottom: 0;
+      width: 2px;
+      background: #1e2433;
+    }
+    .timeline-item {
+      position: relative;
+      margin-bottom: 20px;
+    }
+    .timeline-item::before {
+      content: '';
+      position: absolute;
+      left: -24px;
+      top: 6px;
+      width: 10px; height: 10px;
+      border-radius: 50%;
+      background: #38bdf8;
+      border: 2px solid #0f1117;
+    }
+    .timeline-item .time {
+      font-size: 11px;
+      color: #475569;
+      margin-bottom: 2px;
+    }
+    .timeline-item .text {
+      font-size: 13px;
+      color: #cbd5e1;
+    }
+    .timeline-item .text strong { color: #f8fafc; }
+
+    /* FOOTER */
+    .footer {
+      text-align: center;
+      margin-top: 60px;
+      padding-top: 24px;
+      border-top: 1px solid #1e2433;
+      font-size: 12px;
+      color: #334155;
+    }
+  </style>
+</head>
+<body>
+<div class="container">
+
+  <!-- HEADER -->
+  <div class="header">
+    <div class="badge">Changelog</div>
+    <h1>Automação Shopee + Monday.com</h1>
+    <p>Elevate Ecom &nbsp;·&nbsp; Sessão de manutenção: 22–26 Mai 2026</p>
+  </div>
+
+  <!-- STATS -->
+  <div class="stats">
+    <div class="stat-card green">
+      <div class="num">7</div>
+      <div class="label">Correções</div>
+    </div>
+    <div class="stat-card blue">
+      <div class="num">5</div>
+      <div class="label">Novos arquivos</div>
+    </div>
+    <div class="stat-card orange">
+      <div class="num">4</div>
+      <div class="label">Melhorias</div>
+    </div>
+    <div class="stat-card purple">
+      <div class="num">77</div>
+      <div class="label">Perfis ativos</div>
+    </div>
+  </div>
+
+  <!-- BUGS CORRIGIDOS -->
+  <div class="section">
+    <div class="section-title"><span class="dot red"></span> Bugs Corrigidos</div>
+
+    <div class="card bug">
+      <div class="card-header">
+        <span class="tag bug">BUG</span>
+        <span class="card-title">MONDAY_BOARD_ID incorreto</span>
+        <span class="card-file">config.py · testar_monday.py</span>
+      </div>
+      <div class="card-desc">
+        O ID do board estava errado em ambos os arquivos, fazendo com que os relatórios fossem enviados para um board inexistente.
+        <ul>
+          <li>Antes: <code>18414132966</code></li>
+          <li>Depois: <code>18410901694</code> (Ezequiel - Execução)</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="card bug">
+      <div class="card-header">
+        <span class="tag bug">BUG CRÍTICO</span>
+        <span class="card-title">UnicodeEncodeError — terminal fechava imediatamente</span>
+        <span class="card-file">RODAR_RELATORIO.bat</span>
+      </div>
+      <div class="card-desc">
+        O bat chamava Python sem flag UTF-8. Caracteres como <code>→</code> no código causavam crash imediato e o terminal fechava sem mostrar erro.
+        <ul>
+          <li>Corrigido: adicionado <code>-X utf8</code> em todas as chamadas Python</li>
+          <li>Também adicionado <code>chcp 65001</code> no bat para garantir encoding correto</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="card bug">
+      <div class="card-header">
+        <span class="tag bug">BUG</span>
+        <span class="card-title">Comando <code>tee</code> não existe no Windows</span>
+        <span class="card-file">RODAR_RELATORIO.bat</span>
+      </div>
+      <div class="card-desc">
+        O bat usava <code>| tee</code> para salvar log e exibir na tela ao mesmo tempo. Esse comando não existe no Windows nativamente — causava fechamento silencioso.
+        <ul>
+          <li>Corrigido: substituído por <code>&gt; log.txt</code> seguido de <code>type log.txt</code></li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="card bug">
+      <div class="card-header">
+        <span class="tag bug">BUG</span>
+        <span class="card-title">Tarefa agendada falhava com exit code 1</span>
+        <span class="card-file">tarefa_agendada.xml · RODAR_RELATORIO.bat</span>
+      </div>
+      <div class="card-desc">
+        A execução automática de 22/05/2026 às 00:00 falhou silenciosamente (exit code 1) por causa do UnicodeEncodeError. Sem log, era impossível diagnosticar.
+        <ul>
+          <li>Corrigido: UTF-8 forçado resolve o crash</li>
+          <li>Log automático criado em <code>logs/relatorio_AAAA-MM-DD_HHMM.log</code></li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="card bug">
+      <div class="card-header">
+        <span class="tag bug">BUG</span>
+        <span class="card-title">Monday.com retornava 429 Too Many Requests</span>
+        <span class="card-file">monday_integration.py</span>
+      </div>
+      <div class="card-desc">
+        Sem tratamento de rate limit, a API do Monday rejeitava requisições durante execuções longas (muitos clientes) e o relatório não era enviado.
+        <ul>
+          <li>Corrigido: retry automático com espera progressiva (60s / 120s / 180s)</li>
+          <li>Até 3 tentativas antes de falhar definitivamente</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="card bug">
+      <div class="card-header">
+        <span class="tag bug">BUG</span>
+        <span class="card-title">Script wise — rate limit sem retry (COMPLEXITY_BUDGET_EXHAUSTED)</span>
+        <span class="card-file">monday-tarefas-automaticas-board2.js</span>
+      </div>
+      <div class="card-desc">
+        O delay de 200ms entre requisições era muito curto para criar 72+ itens no Monday. Vários clientes eram pulados (FORELI, Byelpe, ThaBeauty, Javali, etc.).
+        <ul>
+          <li>Identificado na execução de teste — clientes afetados listados no log</li>
+          <li>Correção pendente: aumentar delay e adicionar retry com <code>retry_in_seconds</code></li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="card bug">
+      <div class="card-header">
+        <span class="tag bug">BUG</span>
+        <span class="card-title">Script de wake/sleep — PC não acordava</span>
+        <span class="card-file">TESTAR_WAKE_SLEEP.bat</span>
+      </div>
+      <div class="card-desc">
+        O script original de teste tinha 4 problemas que impediam o PC de acordar:
+        <ul>
+          <li><code>schtasks</code> com <code>^</code> quebrando linha falhava silenciosamente</li>
+          <li><code>WakeToRun</code> via PowerShell não era salvo corretamente</li>
+          <li>Cálculo de hora com <code>%time%</code> quebrava quando hora &lt; 10 (espaço extra)</li>
+          <li><code>errorlevel</code> checado após PowerShell, não após schtasks</li>
+        </ul>
+        Corrigido: script reescrito usando XML com <code>WakeToRun=true</code> embutido.
+      </div>
+    </div>
+
+  </div>
+
+  <!-- NOVOS ARQUIVOS -->
+  <div class="section">
+    <div class="section-title"><span class="dot blue"></span> Novos Arquivos Criados</div>
+
+    <div class="card new">
+      <div class="card-header">
+        <span class="tag new">NOVO</span>
+        <span class="card-title">RODAR_RELATORIO.bat — menu interativo</span>
+        <span class="card-file">RODAR_RELATORIO.bat</span>
+      </div>
+      <div class="card-desc">
+        Substituiu o bat simples por um menu completo com 4 opções:
+        <ul>
+          <li><strong>[1]</strong> Todos os clientes (semana atual)</li>
+          <li><strong>[2]</strong> Um cliente específico (por nome)</li>
+          <li><strong>[3]</strong> Verificar sessões — lista quais perfis precisam de login</li>
+          <li><strong>[4]</strong> Sair</li>
+        </ul>
+        Se houver erros de sessão expirada, o PC não suspende e o log fica acessível.
+      </div>
+    </div>
+
+    <div class="card new">
+      <div class="card-header">
+        <span class="tag new">NOVO</span>
+        <span class="card-title">verificar_sessoes.py + VERIFICAR_SESSOES.bat</span>
+        <span class="card-file">verificar_sessoes.py</span>
+      </div>
+      <div class="card-desc">
+        Diagnóstico rápido de sessões: abre cada perfil Dolphin, navega para o Shopee e verifica se está logado.
+        <ul>
+          <li>Exibe <strong>✅ OK</strong> ou <strong>❌ EXPIRADA</strong> para cada perfil</li>
+          <li>Lista final com todos os perfis que precisam de login manual</li>
+          <li>Essencial rodar antes da automação semanal</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="card new">
+      <div class="card-header">
+        <span class="tag new">NOVO</span>
+        <span class="card-title">TESTAR_WAKE_SLEEP.bat — teste de acordar PC</span>
+        <span class="card-file">TESTAR_WAKE_SLEEP.bat</span>
+      </div>
+      <div class="card-desc">
+        Script de teste para validar o ciclo de suspensão e despertar automático:
+        <ul>
+          <li>Agenda tarefa via XML com <code>WakeToRun=true</code> para daqui 3 minutos</li>
+          <li>Suspende o PC imediatamente</li>
+          <li>PC deve acordar sozinho e rodar o relatório</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="card new">
+      <div class="card-header">
+        <span class="tag new">NOVO</span>
+        <span class="card-title">Sistema de logs automático</span>
+        <span class="card-file">logs/relatorio_AAAA-MM-DD_HHMM.log</span>
+      </div>
+      <div class="card-desc">
+        Toda execução (manual ou agendada) agora gera um arquivo de log na pasta <code>logs/</code>.
+        <ul>
+          <li>Nome inclui data e hora da execução</li>
+          <li>Guarda saída completa do Python + código de saída</li>
+          <li>Permite diagnóstico de falhas ocorridas de madrugada</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="card new">
+      <div class="card-header">
+        <span class="tag new">NOVO</span>
+        <span class="card-title">ELEVATE - RELATORIOS SHOPEE.bat</span>
+        <span class="card-file">ELEVATE - RELATORIOS SHOPEE.bat</span>
+      </div>
+      <div class="card-desc">
+        Atalho dedicado com título fixo na barra do terminal. Mesmo menu do RODAR_RELATORIO.bat — criado para uso direto pelo usuário sem ambiguidade.
+      </div>
+    </div>
+
+  </div>
+
+  <!-- MELHORIAS -->
+  <div class="section">
+    <div class="section-title"><span class="dot orange"></span> Melhorias</div>
+
+    <div class="card improve">
+      <div class="card-header">
+        <span class="tag improve">MELHORIA</span>
+        <span class="card-title">Suspensão condicional do PC</span>
+        <span class="card-file">RODAR_RELATORIO.bat</span>
+      </div>
+      <div class="card-desc">
+        Antes o PC suspendia sempre ao final, mesmo com erros. Agora:
+        <ul>
+          <li>✅ Sucesso → suspende após 60 segundos (cancelável)</li>
+          <li>❌ Erro → PC fica acordado, pausa para análise, volta ao menu</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="card improve">
+      <div class="card-header">
+        <span class="tag improve">MELHORIA</span>
+        <span class="card-title">Detecção e mensagem de sessão expirada</span>
+        <span class="card-file">shopee_scraper.py</span>
+      </div>
+      <div class="card-desc">
+        Quando um perfil está deslogado, o script agora:
+        <ul>
+          <li>Detecta o redirecionamento para a tela de login</li>
+          <li>Exibe mensagem clara: <strong>❌ SESSÃO SHOPEE EXPIRADA</strong></li>
+          <li>Salva screenshot de diagnóstico e pula para o próximo cliente</li>
+          <li>Não trava nem fecha o processo inteiro</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="card improve">
+      <div class="card-header">
+        <span class="tag improve">MELHORIA</span>
+        <span class="card-title">Monday.com — retry automático em 429</span>
+        <span class="card-file">monday_integration.py</span>
+      </div>
+      <div class="card-desc">
+        Função <code>_gql()</code> agora reage ao status 429 com espera e nova tentativa automaticamente, sem intervenção manual.
+      </div>
+    </div>
+
+    <div class="card improve">
+      <div class="card-header">
+        <span class="tag improve">MELHORIA</span>
+        <span class="card-title">Verificação de configurações da tarefa agendada</span>
+        <span class="card-file">tarefa_agendada.xml</span>
+      </div>
+      <div class="card-desc">
+        Confirmadas as configurações críticas da tarefa no Agendador do Windows:
+        <ul>
+          <li><strong>WakeToRun:</strong> ✅ True — PC acorda da suspensão</li>
+          <li><strong>StartWhenAvailable:</strong> ✅ True — roda se estava suspenso na hora certa</li>
+          <li><strong>RunLevel:</strong> ✅ Highest — executa com privilégios de administrador</li>
+          <li><strong>Próxima execução:</strong> 29/05/2026 às 00:00</li>
+        </ul>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- TIMELINE -->
+  <div class="section">
+    <div class="section-title"><span class="dot green"></span> Linha do Tempo</div>
+    <div class="timeline">
+      <div class="timeline-item">
+        <div class="time">22 Mai 2026</div>
+        <div class="text"><strong>Script wake/sleep reescrito</strong> — PC não acordava. Causa: 4 bugs no bat original. Corrigido com XML e PowerShell para cálculo de hora.</div>
+      </div>
+      <div class="timeline-item">
+        <div class="time">25 Mai 2026</div>
+        <div class="text"><strong>MONDAY_BOARD_ID corrigido</strong> — board <code>18414132966</code> → <code>18410901694</code>. Conexão confirmada, grupo e item criados com sucesso.</div>
+      </div>
+      <div class="timeline-item">
+        <div class="time">25 Mai 2026</div>
+        <div class="text"><strong>Script wise (board2) testado</strong> — 72 itens criados para Segunda/Sexta. Erros de rate limit identificados em ~12 clientes.</div>
+      </div>
+      <div class="timeline-item">
+        <div class="time">26 Mai 2026</div>
+        <div class="text"><strong>RODAR_RELATORIO.bat reconstruído</strong> — tee removido, menu adicionado, log automático, suspensão condicional.</div>
+      </div>
+      <div class="timeline-item">
+        <div class="time">26 Mai 2026</div>
+        <div class="text"><strong>UnicodeEncodeError resolvido</strong> — <code>-X utf8</code> adicionado em todas as chamadas Python. Causa raiz da falha de 22/05 confirmada.</div>
+      </div>
+      <div class="timeline-item">
+        <div class="time">26 Mai 2026</div>
+        <div class="text"><strong>Sessões expiradas identificadas</strong> — perfil Flor de lis deslogado. Criado script <code>verificar_sessoes.py</code> para diagnóstico preventivo.</div>
+      </div>
+      <div class="timeline-item">
+        <div class="time">26 Mai 2026</div>
+        <div class="text"><strong>Relatório Foreli confirmado ✅</strong> — R$1.497,36 faturamento, ROAS 9,55x, enviado ao Monday.com com sucesso.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- FOOTER -->
+  <div class="footer">
+    Gerado em 26/05/2026 &nbsp;·&nbsp; Elevate Ecom &nbsp;·&nbsp; Automação Shopee + Monday.com
+  </div>
+
+</div>
+</body>
+</html>

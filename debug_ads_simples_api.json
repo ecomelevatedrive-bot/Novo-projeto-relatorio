@@ -1,0 +1,12 @@
+{
+  "code": 5,
+  "msg": "invalid request",
+  "debug_detail": "",
+  "validation_error_list": [
+    {
+      "field": "agg_interval",
+      "msg": "AggInterval is required"
+    }
+  ],
+  "data": null
+}
