@@ -33,8 +33,8 @@ def _verificar_dolphin_ativo() -> None:
         pass  # está rodando mas lento — continua
 
 
-def listar_perfis_shopee() -> list[dict]:
-    """Retorna todos os perfis com a tag 'Shopee' (case-insensitive)."""
+def listar_perfis_por_tag(tag: str) -> list[dict]:
+    """Retorna todos os perfis que possuem a tag informada (case-insensitive)."""
     todos = []
     page  = 1
     while True:
@@ -52,13 +52,17 @@ def listar_perfis_shopee() -> list[dict]:
             break
         page += 1
 
-    shopee = []
-    for p in todos:
-        tags = [t.lower() for t in (p.get("tags") or [])]
-        if "shopee" in tags:
-            shopee.append({"id": p["id"], "nome": p["name"]})
+    tag_lower = tag.lower()
+    return [
+        {"id": p["id"], "nome": p["name"]}
+        for p in todos
+        if tag_lower in [t.lower() for t in (p.get("tags") or [])]
+    ]
 
-    return shopee
+
+def listar_perfis_shopee() -> list[dict]:
+    """Retorna todos os perfis com a tag 'Shopee' (case-insensitive)."""
+    return listar_perfis_por_tag("Shopee")
 
 
 def _sessao_local() -> requests.Session:
